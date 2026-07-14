@@ -89,6 +89,18 @@ const M = UnicodeMaps
         @test !isempty(s)
     end
 
+    @testset "marker pin" begin
+        mc = M.MapCanvas(40, 20)
+        red = M.rgb(0xea, 0x43, 0x35)
+        x, y = mc.width ÷ 2, mc.height ÷ 2
+        M.draw_marker!(mc, x, y, red)
+        # the exact tip pixel is the marker color
+        cx, cy = M.UP.pixel_to_char_point(mc.canvas, x, y)
+        @test mc.canvas.colors[cy, cx] == red
+        # a pin covers several cells
+        @test count(==(red), mc.canvas.colors) > 5
+    end
+
     @testset "network smoke test (OpenFreeMap)" begin
         ran = false
         try

@@ -22,6 +22,8 @@ worldmap(center = (0.0, 20.0), zoom = 1)
 ## Examples
 
 Real output (in the terminal it is 24-bit color; shown here in monochrome).
+By default a red pin marks the requested `center` (Google-Maps style); it is
+omitted from these monochrome samples for clarity — pass `marker = false` to hide it.
 
 **The whole world**, `worldmap(center = (0.0, 25.0), zoom = 1)`:
 

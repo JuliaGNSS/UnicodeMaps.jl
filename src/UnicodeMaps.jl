@@ -61,6 +61,8 @@ Keyword arguments:
 - `style`: a [`Style`](@ref); defaults to the bundled OpenMapTiles dark style.
 - `source`: a [`TileSource`](@ref); defaults to OpenFreeMap (network access).
 - `maxzoom`: highest tile zoom to request (default `14`).
+- `marker`: place a pin on `center` (default `true`).
+- `marker_color`: the pin color (default Google-Maps red).
 
 Reuse a single `source` across calls to benefit from its tile cache.
 """
@@ -71,8 +73,10 @@ function worldmap(;
         style::Style = default_style(),
         source::TileSource = TileSource(),
         maxzoom::Integer = 14,
+        marker::Bool = true,
+        marker_color::ColorU = MARKER_COLOR,
     )
-    return MapImage(render(center, zoom; size, style, source, maxzoom))
+    return MapImage(render(center, zoom; size, style, source, maxzoom, marker, marker_color))
 end
 
 end # module UnicodeMaps

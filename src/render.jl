@@ -102,11 +102,15 @@ function place_label!(lb::LabelBuffer, text, cx, cy, margin)
     return true
 end
 
+# Google Maps' pin red.
+const MARKER_COLOR = rgb(0xea, 0x43, 0x35)
+
 """
-    render(center, zoom; size, style, source, maxzoom) -> MapCanvas
+    render(center, zoom; size, style, source, maxzoom, marker, marker_color) -> MapCanvas
 
 Fetch, style, and draw the map for `center = (lon, lat)` at `zoom`, returning the
-filled `MapCanvas`. `size = (chars_wide, chars_high)`.
+filled `MapCanvas`. `size = (chars_wide, chars_high)`. When `marker` is `true`, a
+pin is placed with its tip on `center`.
 """
 function render(
         center::Tuple{<:Real,<:Real},
@@ -115,6 +119,8 @@ function render(
         style::Style = default_style(),
         source::TileSource = TileSource(),
         maxzoom::Integer = 14,
+        marker::Bool = true,
+        marker_color::ColorU = MARKER_COLOR,
     )
     lon, lat = center
     cw, ch = size
@@ -165,6 +171,11 @@ function render(
         if place_label!(lb, txt, startx, cy, 1)
             draw_text!(mc, txt, max(0, (startx - 1) * 2), y, color)
         end
+    end
+
+    # Pin marking the exact requested center, on top of everything.
+    if marker
+        draw_marker!(mc, round(Int, mc.width / 2), round(Int, mc.height / 2), marker_color)
     end
 
     return mc

@@ -147,6 +147,31 @@ function fill_polygon!(mc::MapCanvas, rings, color::ColorU)
     return mc
 end
 
+# Points evenly spaced around a circle (screen pixels), for use as a fill ring.
+circle_ring(cx, cy, r) =
+    [(round(Int, cx + r * cos(a)), round(Int, cy + r * sin(a)))
+     for a in range(0, 2π; length = 37)]
+
+"""
+    draw_marker!(mc, x, y, color; radius, height, hole)
+
+Draw a Google-Maps-style pin whose **tip points exactly at** screen pixel
+`(x, y)`: a round head of `radius` sitting `height` pixels above the tip, a
+tapered stem down to the tip, and a small punched-out `hole` in the head.
+"""
+function draw_marker!(
+        mc::MapCanvas, x::Integer, y::Integer, color::ColorU;
+        radius::Integer = 6, height::Integer = 18,
+        hole::ColorU = rgb(0x0a, 0x0e, 0x14),
+    )
+    hcx, hcy = x, y - height
+    fill_polygon!(mc, [[(hcx - radius, hcy), (hcx + radius, hcy), (x, y)]], color)  # stem
+    fill_polygon!(mc, [circle_ring(hcx, hcy, radius)], color)                        # head
+    fill_polygon!(mc, [circle_ring(hcx, hcy, max(1, radius ÷ 3))], hole)             # hole
+    set_pixel!(mc, x, y, color)  # ensure the exact tip pixel lands on the target
+    return mc
+end
+
 """
     draw_text!(mc, text, x, y, color)
 
