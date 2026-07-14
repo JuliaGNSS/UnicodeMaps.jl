@@ -4,41 +4,41 @@
     {
       "id": "background",
       "type": "background",
-      "paint": { "background-color": "#e9e4d6" }
+      "paint": { "background-color": "#ece7da" }
     },
     {
       "id": "water",
       "type": "fill",
       "source-layer": "water",
-      "paint": { "fill-color": "#8fbce6" }
+      "paint": { "fill-color": "#77aad8" }
     },
     {
       "id": "landcover-wood",
       "type": "fill",
       "source-layer": "landcover",
       "filter": ["in", "class", "wood", "forest"],
-      "paint": { "fill-color": "#b9d1a0" }
+      "paint": { "fill-color": "#9cc07f" }
     },
     {
       "id": "landcover-grass",
       "type": "fill",
       "source-layer": "landcover",
       "filter": ["in", "class", "grass", "park", "meadow"],
-      "paint": { "fill-color": "#cbe0b3" }
+      "paint": { "fill-color": "#b2d590" }
     },
     {
       "id": "landcover-ice",
       "type": "fill",
       "source-layer": "landcover",
       "filter": ["in", "class", "ice", "glacier", "snow"],
-      "paint": { "fill-color": "#eef3f6" }
+      "paint": { "fill-color": "#dbe6ec" }
     },
     {
       "id": "landcover-sand",
       "type": "fill",
       "source-layer": "landcover",
       "filter": ["in", "class", "sand", "beach"],
-      "paint": { "fill-color": "#eee0bf" }
+      "paint": { "fill-color": "#e3d3a0" }
     },
     {
       "id": "landuse-residential",
@@ -46,14 +46,14 @@
       "source-layer": "landuse",
       "minzoom": 8,
       "filter": ["in", "class", "residential", "suburb", "neighbourhood"],
-      "paint": { "fill-color": "#e0dbc9" }
+      "paint": { "fill-color": "#dcd2b9" }
     },
     {
       "id": "building",
       "type": "fill",
       "source-layer": "building",
       "minzoom": 13,
-      "paint": { "fill-color": "#d2c9b4" }
+      "paint": { "fill-color": "#a5926f" }
     },
     {
       "id": "road-minor",
@@ -61,7 +61,7 @@
       "source-layer": "transportation",
       "minzoom": 12,
       "filter": ["in", "class", "minor", "service", "track", "path", "pedestrian"],
-      "paint": { "line-color": "#bdb298", "line-width": 1 }
+      "paint": { "line-color": "#8a7d62", "line-width": 1 }
     },
     {
       "id": "road-secondary",
@@ -69,7 +69,7 @@
       "source-layer": "transportation",
       "minzoom": 9,
       "filter": ["in", "class", "secondary", "tertiary"],
-      "paint": { "line-color": "#e0b370", "line-width": 1 }
+      "paint": { "line-color": "#c9862f", "line-width": 1 }
     },
     {
       "id": "road-major",
@@ -77,7 +77,7 @@
       "source-layer": "transportation",
       "minzoom": 5,
       "filter": ["in", "class", "motorway", "trunk", "primary"],
-      "paint": { "line-color": "#e08a2e", "line-width": 2 }
+      "paint": { "line-color": "#dd6f12", "line-width": 2 }
     },
     {
       "id": "railway",
@@ -85,14 +85,14 @@
       "source-layer": "transportation",
       "minzoom": 11,
       "filter": ["==", "class", "rail"],
-      "paint": { "line-color": "#8f8f8f", "line-width": 1 }
+      "paint": { "line-color": "#6f6f6f", "line-width": 1 }
     },
     {
       "id": "boundary-country",
       "type": "line",
       "source-layer": "boundary",
       "filter": ["<=", "admin_level", 2],
-      "paint": { "line-color": "#5c5566", "line-width": 1 }
+      "paint": { "line-color": "#3f384a", "line-width": 1 }
     },
     {
       "id": "boundary-state",
@@ -100,14 +100,14 @@
       "source-layer": "boundary",
       "minzoom": 4,
       "filter": ["all", [">", "admin_level", 2], ["<=", "admin_level", 4]],
-      "paint": { "line-color": "#9a90a6", "line-width": 1 }
+      "paint": { "line-color": "#7d7189", "line-width": 1 }
     },
     {
       "id": "place-country",
       "type": "symbol",
       "source-layer": "place",
       "filter": ["in", "class", "country", "continent"],
-      "paint": { "text-color": "#4a3d22" }
+      "paint": { "text-color": "#3a2f16" }
     },
     {
       "id": "place-city",
@@ -115,7 +115,7 @@
       "source-layer": "place",
       "minzoom": 4,
       "filter": ["in", "class", "city", "town"],
-      "paint": { "text-color": "#1f1f1f" }
+      "paint": { "text-color": "#121212" }
     },
     {
       "id": "place-other",
@@ -123,13 +123,13 @@
       "source-layer": "place",
       "minzoom": 8,
       "filter": ["in", "class", "village", "hamlet", "suburb", "neighbourhood"],
-      "paint": { "text-color": "#565042" }
+      "paint": { "text-color": "#463f30" }
     },
     {
       "id": "water-name",
       "type": "symbol",
       "source-layer": "water_name",
-      "paint": { "text-color": "#2f6091" }
+      "paint": { "text-color": "#255589" }
     }
   ]
 }
