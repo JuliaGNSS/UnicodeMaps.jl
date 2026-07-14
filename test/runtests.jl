@@ -100,6 +100,34 @@ const M = UnicodeMaps
         @test !isempty(s)
     end
 
+    @testset "interactive helpers" begin
+        # key decoding
+        @test M.read_key(IOBuffer("\e[A")) === :up
+        @test M.read_key(IOBuffer("\e[B")) === :down
+        @test M.read_key(IOBuffer("\e[C")) === :right
+        @test M.read_key(IOBuffer("\e[D")) === :left
+        @test M.read_key(IOBuffer("\eOA")) === :up
+        @test M.read_key(IOBuffer("q")) === 'q'
+        @test M.read_key(IOBuffer("\x03")) === :quit
+        @test M.read_key(IOBuffer("\e")) === :esc
+        @test M.read_key(IOBuffer("")) === :eof
+        # longitude wrapping
+        @test M.wrap_lon(190.0) ≈ -170.0
+        @test M.wrap_lon(-190.0) ≈ 170.0
+        # panning: east increases lon, south decreases lat; round-trips back
+        lon, lat = 10.0, 50.0
+        e = M.pan_center(lon, lat, 8, 100, 40, 0.25, 0.0)
+        @test e[1] > lon && e[2] ≈ lat
+        s = M.pan_center(lon, lat, 8, 100, 40, 0.0, 0.25)
+        @test s[2] < lat && s[1] ≈ lon
+        back = M.pan_center(e..., 8, 100, 40, -0.25, 0.0)
+        @test back[1] ≈ lon atol = 1e-6
+        # higher zoom pans a smaller geographic distance
+        far = M.pan_center(lon, lat, 4, 100, 40, 0.25, 0.0)
+        @test (far[1] - lon) > (e[1] - lon)
+        @test M.pan_center(0.0, 89.0, 3, 80, 40, 0.0, -1.0)[2] <= 85.06  # Mercator pole limit
+    end
+
     @testset "marker pin" begin
         mc = M.MapCanvas(40, 20)
         red = M.rgb(0xea, 0x43, 0x35)

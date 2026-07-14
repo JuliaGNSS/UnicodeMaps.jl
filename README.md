@@ -79,6 +79,16 @@ North Atlantic Ocean⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢁⡎⠀⠀⠀⠀⣴⣿⣿
 ⠀⠀⠀⠀⠀⠀⠀⠀⠈⠛⠶⡿⠉⠀⠀⠀⠀⠀⠀⠀⣪⡀⢠⡵⠤⠤⠔⠲⠟⠏⠉⠋⠙⠻⢶⣶⣭⡙⠀⢠⡠⣀⡀⠀⠀⣀⡤⠴⠒⠚⠉⠓⡝⡎⢽⠀⠀Austria⠀⠀⠀⠀⠀⠘⢦⣀⠀⡝
 ```
 
+## Interactive viewer
+
+`explore` opens a full-screen live map. Pan with the arrow keys (or `hjkl`),
+zoom with `+`/`-`, and quit with `q`. Tiles are cached, so revisiting an area is
+instant.
+
+```julia
+explore(center = (13.42, 52.51), zoom = 12)
+```
+
 ## How it works
 
 The pipeline mirrors mapscii's, built from reusable pieces:

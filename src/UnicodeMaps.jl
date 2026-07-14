@@ -14,6 +14,7 @@ worldmap(center = (13.42, 52.51), zoom = 6)   # Berlin
 module UnicodeMaps
 
 export worldmap,
+    explore,
     render,
     MapImage,
     MapCanvas,
@@ -29,6 +30,7 @@ include("canvas.jl")
 include("style.jl")
 include("tilesource.jl")
 include("render.jl")
+include("interactive.jl")
 
 """
     MapImage
