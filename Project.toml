@@ -1,0 +1,27 @@
+name = "UnicodeMaps"
+uuid = "93404ded-f489-4c96-9f3f-351522718b35"
+version = "0.1.0"
+authors = ["Sören Schönbrod <soeren.schoenbrod@juliahub.com>"]
+
+[deps]
+CodecZlib = "944b1d66-785c-5afd-91f1-9de20f533193"
+Downloads = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
+JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
+MapTiles = "fea52e5a-b371-463b-85f5-81770daa2737"
+ProtoBuf = "3349acd9-ac6a-5e09-bcdb-63829b23a429"
+UnicodePlots = "b8865327-cd53-5732-bb35-84acbb429228"
+
+[compat]
+CodecZlib = "0.7"
+Downloads = "1"
+JSON3 = "1"
+MapTiles = "1"
+ProtoBuf = "1"
+UnicodePlots = "3"
+julia = "1.9"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
