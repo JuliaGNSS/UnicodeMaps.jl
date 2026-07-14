@@ -161,7 +161,7 @@ tapered stem down to the tip, and a small punched-out `hole` in the head.
 """
 function draw_marker!(
         mc::MapCanvas, x::Integer, y::Integer, color::ColorU;
-        radius::Integer = 6, height::Integer = 18,
+        radius::Integer = 3, height::Integer = 9,
         hole::ColorU = rgb(0x0a, 0x0e, 0x14),
     )
     hcx, hcy = x, y - height
