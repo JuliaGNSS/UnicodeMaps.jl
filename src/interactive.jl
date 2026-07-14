@@ -109,7 +109,7 @@ function explore(;
     )
     lon, lat = float(center[1]), float(center[2])
     z = float(zoom)
-    term = REPL.TerminalMenus.terminal
+    term = REPL.Terminals.TTYTerminal(get(ENV, "TERM", "xterm"), stdin, stdout, stderr)
     print(stdout, ALT_SCREEN_ON, HIDE_CURSOR)
     REPL.Terminals.raw!(term, true)
     try
