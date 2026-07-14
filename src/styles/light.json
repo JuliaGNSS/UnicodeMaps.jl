@@ -61,7 +61,7 @@
       "source-layer": "transportation",
       "minzoom": 12,
       "filter": ["in", "class", "minor", "service", "track", "path", "pedestrian"],
-      "paint": { "line-color": "#8a7d62", "line-width": 1 }
+      "paint": { "line-color": "#bdb298", "line-width": 1 }
     },
     {
       "id": "road-secondary",
@@ -69,7 +69,7 @@
       "source-layer": "transportation",
       "minzoom": 9,
       "filter": ["in", "class", "secondary", "tertiary"],
-      "paint": { "line-color": "#c9862f", "line-width": 1 }
+      "paint": { "line-color": "#d98f3f", "line-width": 1 }
     },
     {
       "id": "road-major",
