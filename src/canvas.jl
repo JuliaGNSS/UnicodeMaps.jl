@@ -37,21 +37,26 @@ end
 
 hex_color(s::AbstractString)::ColorU = rgb(hex2rgb(s)...)
 
+"Sentinel meaning \"no color\" (transparent / terminal default)."
+const NO_COLOR = typemax(ColorU)
+
 """
-    MapCanvas(char_width, char_height)
+    MapCanvas(char_width, char_height; background = NO_COLOR)
 
 A braille drawing surface `char_width` × `char_height` characters, i.e.
-`2*char_width` × `4*char_height` pixels.
+`2*char_width` × `4*char_height` pixels. `background` fills every cell behind the
+braille dots (use `NO_COLOR` for the terminal default).
 """
 struct MapCanvas
     canvas::UP.BrailleCanvas
-    width::Int   # pixel width
-    height::Int  # pixel height
+    width::Int          # pixel width
+    height::Int         # pixel height
+    background::ColorU  # cell background color, or NO_COLOR for transparent
 end
 
-function MapCanvas(char_width::Integer, char_height::Integer)
+function MapCanvas(char_width::Integer, char_height::Integer; background::ColorU = NO_COLOR)
     canvas = UP.BrailleCanvas(char_height, char_width; blend = false)
-    return MapCanvas(canvas, UP.pixel_width(canvas), UP.pixel_height(canvas))
+    return MapCanvas(canvas, UP.pixel_width(canvas), UP.pixel_height(canvas), background)
 end
 
 @inline inbounds(mc::MapCanvas, x::Integer, y::Integer) =
@@ -152,22 +157,40 @@ circle_ring(cx, cy, r) =
     [(round(Int, cx + r * cos(a)), round(Int, cy + r * sin(a)))
      for a in range(0, 2π; length = 37)]
 
+# Reset every character cell overlapping the pixel box to a blank, uncolored
+# state, so a marker drawn afterwards isn't merged with underlying map dots
+# (braille cells hold one color and pixel! ORs dots into them).
+function clear_region!(mc::MapCanvas, x0::Integer, y0::Integer, x1::Integer, y1::Integer)
+    grid, colors = mc.canvas.grid, mc.canvas.colors
+    cx0, cy0 = UP.pixel_to_char_point(mc.canvas, clamp(x0, 0, mc.width - 1), clamp(y0, 0, mc.height - 1))
+    cx1, cy1 = UP.pixel_to_char_point(mc.canvas, clamp(x1, 0, mc.width - 1), clamp(y1, 0, mc.height - 1))
+    for cy in min(cy0, cy1):max(cy0, cy1), cx in min(cx0, cx1):max(cx0, cx1)
+        if checkbounds(Bool, grid, cy, cx)
+            grid[cy, cx] = UInt32(0x2800)  # blank braille
+            colors[cy, cx] = NO_COLOR
+        end
+    end
+    return mc
+end
+
 """
     draw_marker!(mc, x, y, color; radius, height, hole)
 
 Draw a Google-Maps-style pin whose **tip points exactly at** screen pixel
-`(x, y)`: a round head of `radius` sitting `height` pixels above the tip, a
-tapered stem down to the tip, and a small punched-out `hole` in the head.
+`(x, y)`: a round head of `radius` sitting `height` pixels above the tip and a
+tapered stem down to the tip. The cells under the pin are cleared first so the
+surrounding map does not bleed into its shape. Pass a `hole` color to punch a
+dot in the head (off by default, since it is illegible at small sizes).
 """
 function draw_marker!(
         mc::MapCanvas, x::Integer, y::Integer, color::ColorU;
-        radius::Integer = 3, height::Integer = 9,
-        hole::ColorU = rgb(0x0a, 0x0e, 0x14),
+        radius::Integer = 3, height::Integer = 9, hole::ColorU = NO_COLOR,
     )
     hcx, hcy = x, y - height
+    clear_region!(mc, hcx - radius - 1, hcy - radius - 1, x + 1, y + 1)
     fill_polygon!(mc, [[(hcx - radius, hcy), (hcx + radius, hcy), (x, y)]], color)  # stem
     fill_polygon!(mc, [circle_ring(hcx, hcy, radius)], color)                        # head
-    fill_polygon!(mc, [circle_ring(hcx, hcy, max(1, radius ÷ 3))], hole)             # hole
+    hole == NO_COLOR || fill_polygon!(mc, [circle_ring(hcx, hcy, max(1, radius ÷ 3))], hole)
     set_pixel!(mc, x, y, color)  # ensure the exact tip pixel lands on the target
     return mc
 end
@@ -196,11 +219,12 @@ end
 "Render the canvas to a string of colored braille/text rows."
 function frame(mc::MapCanvas)
     c = mc.canvas
+    bg = mc.background == NO_COLOR ? missing : mc.background
     buf = IOBuffer()
     io = IOContext(buf, :color => true)
     for row in 1:UP.nrows(c)
         for col in 1:UP.ncols(c)
-            UP.print_color(io, c.colors[row, col], Char(c.grid[row, col]))
+            UP.print_color(io, c.colors[row, col], Char(c.grid[row, col]); bgcol = bg)
         end
         row < UP.nrows(c) && print(io, '\n')
     end

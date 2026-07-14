@@ -170,8 +170,22 @@ parse_style(json::AbstractString) = Style(to_native(JSON3.read(json)))
 "Load a Mapbox GL style from a file path."
 load_style(path::AbstractString) = parse_style(read(path, String))
 
-"The bundled OpenMapTiles-schema style."
-default_style() = load_style(joinpath(@__DIR__, "styles", "openmaptiles.json"))
+"Names of the bundled color schemes (see `src/styles/`)."
+const THEMES = (:dark, :light)
+
+"""
+    theme(name) -> Style
+
+Load a bundled color scheme by name. Available: $(THEMES).
+"""
+function theme(name::Symbol)
+    name in THEMES ||
+        throw(ArgumentError("unknown theme :$name; choose one of $(THEMES)"))
+    return load_style(joinpath(@__DIR__, "styles", string(name) * ".json"))
+end
+
+"The default bundled style (the `:dark` OpenMapTiles scheme)."
+default_style() = theme(:dark)
 
 """
     style_for(style, source_layer, props) -> Union{LayerStyle,Nothing}

@@ -68,6 +68,17 @@ const M = UnicodeMaps
         @test M.style_for(style, "no_such_layer", Dict()) === nothing
     end
 
+    @testset "color themes" begin
+        @test Set(M.THEMES) == Set((:dark, :light))
+        for name in M.THEMES
+            t = theme(name)
+            @test t isa M.Style
+            @test t.background !== nothing
+        end
+        @test theme(:dark).background != theme(:light).background
+        @test_throws ArgumentError theme(:nope)
+    end
+
     @testset "slippy math matches MapTiles" begin
         for (lon, lat, z) in [(13.4, 52.5, 6), (-122.4, 37.8, 8), (0.0, 0.0, 3)]
             fx, fy = M.lonlat_to_tile(lon, lat, z)

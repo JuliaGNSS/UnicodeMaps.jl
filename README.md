@@ -105,10 +105,18 @@ worldmap(center = (2.35, 48.85), zoom = 10, source = src)
 
 Reuse one `TileSource` across calls to benefit from its in-memory tile cache.
 
-## Styling
+## Color schemes
 
-A compact dark style targeting the OpenMapTiles schema is bundled
-(`src/styles/openmaptiles.json`). Supply your own Mapbox GL style JSON:
+Two bundled themes (OpenMapTiles schema): `:dark` (default) and `:light`. The
+land is filled with the theme's background color, so areas without roads read as
+land rather than empty terminal.
+
+```julia
+worldmap(center = (13.42, 52.51), zoom = 6, style = :light)
+worldmap(center = (13.42, 52.51), zoom = 6, style = :dark)   # default
+```
+
+Or supply your own Mapbox GL style JSON:
 
 ```julia
 worldmap(center = (0.0, 0.0), zoom = 3, style = load_style("mystyle.json"))
@@ -118,7 +126,7 @@ worldmap(center = (0.0, 0.0), zoom = 3, style = load_style("mystyle.json"))
 
 v1 renders a single static frame. Not yet implemented (deferred):
 interactivity (pan/zoom keys), MBTiles/local sources, spatial indexing,
-zoom-dependent paint interpolation, label clustering, terminal background fill.
+zoom-dependent paint interpolation, label clustering.
 
 ## License
 

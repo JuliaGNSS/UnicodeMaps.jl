@@ -116,15 +116,17 @@ function render(
         center::Tuple{<:Real,<:Real},
         zoom::Real;
         size::Tuple{Integer,Integer} = (120, 50),
-        style::Style = default_style(),
+        style::Union{Style,Symbol} = default_style(),
         source::TileSource = TileSource(),
         maxzoom::Integer = 14,
         marker::Bool = true,
         marker_color::ColorU = MARKER_COLOR,
     )
+    style = style isa Symbol ? theme(style) : style
     lon, lat = center
     cw, ch = size
-    mc = MapCanvas(cw, ch)
+    bg = style.background === nothing ? NO_COLOR : style.background
+    mc = MapCanvas(cw, ch; background = bg)
     z = clamp(floor(Int, zoom), 0, maxzoom)
     tilesize = TILE_PIXELS * 2.0^(zoom - z)
 

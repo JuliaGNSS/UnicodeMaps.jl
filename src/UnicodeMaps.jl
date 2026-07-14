@@ -21,6 +21,7 @@ export worldmap,
     Style,
     load_style,
     parse_style,
+    theme,
     default_style
 
 include("mvt.jl")
@@ -58,7 +59,8 @@ Keyword arguments:
 - `center`: `(lon, lat)` in degrees (default `(0.0, 0.0)`).
 - `zoom`: map zoom level, may be fractional (default `2`).
 - `size`: `(chars_wide, chars_high)`; defaults to fill the terminal.
-- `style`: a [`Style`](@ref); defaults to the bundled OpenMapTiles dark style.
+- `style`: a color scheme — a theme name (`:dark` or `:light`) or a [`Style`](@ref).
+  Defaults to `:dark`. Use [`load_style`](@ref) for a custom Mapbox GL style file.
 - `source`: a [`TileSource`](@ref); defaults to OpenFreeMap (network access).
 - `maxzoom`: highest tile zoom to request (default `14`).
 - `marker`: place a pin on `center` (default `true`).
@@ -70,7 +72,7 @@ function worldmap(;
         center::Tuple{<:Real,<:Real} = (0.0, 0.0),
         zoom::Real = 2,
         size::Tuple{Integer,Integer} = default_display_size(),
-        style::Style = default_style(),
+        style::Union{Style,Symbol} = :dark,
         source::TileSource = TileSource(),
         maxzoom::Integer = 14,
         marker::Bool = true,

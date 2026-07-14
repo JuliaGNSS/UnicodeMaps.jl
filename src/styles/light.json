@@ -1,0 +1,135 @@
+{
+  "name": "unicodemaps-light",
+  "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": { "background-color": "#e9e4d6" }
+    },
+    {
+      "id": "water",
+      "type": "fill",
+      "source-layer": "water",
+      "paint": { "fill-color": "#8fbce6" }
+    },
+    {
+      "id": "landcover-wood",
+      "type": "fill",
+      "source-layer": "landcover",
+      "filter": ["in", "class", "wood", "forest"],
+      "paint": { "fill-color": "#b9d1a0" }
+    },
+    {
+      "id": "landcover-grass",
+      "type": "fill",
+      "source-layer": "landcover",
+      "filter": ["in", "class", "grass", "park", "meadow"],
+      "paint": { "fill-color": "#cbe0b3" }
+    },
+    {
+      "id": "landcover-ice",
+      "type": "fill",
+      "source-layer": "landcover",
+      "filter": ["in", "class", "ice", "glacier", "snow"],
+      "paint": { "fill-color": "#eef3f6" }
+    },
+    {
+      "id": "landcover-sand",
+      "type": "fill",
+      "source-layer": "landcover",
+      "filter": ["in", "class", "sand", "beach"],
+      "paint": { "fill-color": "#eee0bf" }
+    },
+    {
+      "id": "landuse-residential",
+      "type": "fill",
+      "source-layer": "landuse",
+      "minzoom": 8,
+      "filter": ["in", "class", "residential", "suburb", "neighbourhood"],
+      "paint": { "fill-color": "#e0dbc9" }
+    },
+    {
+      "id": "building",
+      "type": "fill",
+      "source-layer": "building",
+      "minzoom": 13,
+      "paint": { "fill-color": "#d2c9b4" }
+    },
+    {
+      "id": "road-minor",
+      "type": "line",
+      "source-layer": "transportation",
+      "minzoom": 12,
+      "filter": ["in", "class", "minor", "service", "track", "path", "pedestrian"],
+      "paint": { "line-color": "#bdb298", "line-width": 1 }
+    },
+    {
+      "id": "road-secondary",
+      "type": "line",
+      "source-layer": "transportation",
+      "minzoom": 9,
+      "filter": ["in", "class", "secondary", "tertiary"],
+      "paint": { "line-color": "#e0b370", "line-width": 1 }
+    },
+    {
+      "id": "road-major",
+      "type": "line",
+      "source-layer": "transportation",
+      "minzoom": 5,
+      "filter": ["in", "class", "motorway", "trunk", "primary"],
+      "paint": { "line-color": "#e08a2e", "line-width": 2 }
+    },
+    {
+      "id": "railway",
+      "type": "line",
+      "source-layer": "transportation",
+      "minzoom": 11,
+      "filter": ["==", "class", "rail"],
+      "paint": { "line-color": "#8f8f8f", "line-width": 1 }
+    },
+    {
+      "id": "boundary-country",
+      "type": "line",
+      "source-layer": "boundary",
+      "filter": ["<=", "admin_level", 2],
+      "paint": { "line-color": "#5c5566", "line-width": 1 }
+    },
+    {
+      "id": "boundary-state",
+      "type": "line",
+      "source-layer": "boundary",
+      "minzoom": 4,
+      "filter": ["all", [">", "admin_level", 2], ["<=", "admin_level", 4]],
+      "paint": { "line-color": "#9a90a6", "line-width": 1 }
+    },
+    {
+      "id": "place-country",
+      "type": "symbol",
+      "source-layer": "place",
+      "filter": ["in", "class", "country", "continent"],
+      "paint": { "text-color": "#4a3d22" }
+    },
+    {
+      "id": "place-city",
+      "type": "symbol",
+      "source-layer": "place",
+      "minzoom": 4,
+      "filter": ["in", "class", "city", "town"],
+      "paint": { "text-color": "#1f1f1f" }
+    },
+    {
+      "id": "place-other",
+      "type": "symbol",
+      "source-layer": "place",
+      "minzoom": 8,
+      "filter": ["in", "class", "village", "hamlet", "suburb", "neighbourhood"],
+      "paint": { "text-color": "#565042" }
+    },
+    {
+      "id": "water-name",
+      "type": "symbol",
+      "source-layer": "water_name",
+      "paint": { "text-color": "#2f6091" }
+    }
+  ]
+}
