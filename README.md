@@ -83,7 +83,8 @@ North Atlantic Ocean⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢁⡎⠀⠀⠀⠀⣴⣿⣿
 
 `explore` opens a full-screen live map. Pan with the arrow keys (or `hjkl`),
 zoom with `+`/`-`, and quit with `q`. Tiles are cached, so revisiting an area is
-instant.
+instant. The pin stays anchored to the starting location as you pan, so you can
+see where you began (and it scrolls off-screen once you pan past it).
 
 ```julia
 explore(center = (13.42, 52.51), zoom = 12)

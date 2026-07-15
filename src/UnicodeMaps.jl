@@ -77,7 +77,7 @@ function worldmap(;
         style::Union{Style,Symbol} = :dark,
         source::TileSource = TileSource(),
         maxzoom::Integer = 14,
-        marker::Bool = true,
+        marker::Union{Bool,Tuple{<:Real,<:Real}} = true,
         marker_color::ColorU = MARKER_COLOR,
     )
     return MapImage(render(center, zoom; size, style, source, maxzoom, marker, marker_color))

@@ -16,6 +16,28 @@ function lonlat_to_tile(lon::Real, lat::Real, z::Real)
     return (x, y)
 end
 
+"Total map width/height in pixels at (possibly fractional) zoom `z`."
+world_px(z) = TILE_PIXELS * 2.0^z
+
+"Wrap a longitude into [-180, 180)."
+wrap_lon(lon) = mod(lon + 180.0, 360.0) - 180.0
+
+# Web-mercator y as a fraction of the whole map (0 at north edge, 1 at south).
+merc_yfraction(lat) = (1 - asinh(tan(deg2rad(clamp(lat, -85.0511, 85.0511)))) / pi) / 2
+
+"""
+    marker_pixel(clon, clat, mlon, mlat, z, W, H) -> (x, y)
+
+Screen pixel of geographic point `(mlon, mlat)` in a `W×H` pixel view centered on
+`(clon, clat)` at zoom `z`. The view center maps to `(W/2, H/2)`.
+"""
+function marker_pixel(clon, clat, mlon, mlat, z, W, H)
+    wp = world_px(z)
+    x = W / 2 + wrap_lon(mlon - clon) / 360 * wp
+    y = H / 2 + (merc_yfraction(mlat) - merc_yfraction(clat)) * wp
+    return (round(Int, x), round(Int, y))
+end
+
 "Geographic bounding box (WGS84 Extent) of an integer tile — via MapTiles."
 tile_extent(z::Integer, x::Integer, y::Integer) =
     MapTiles.extent(MapTiles.Tile(x, y, z), MapTiles.wgs84)
@@ -109,8 +131,11 @@ const MARKER_COLOR = rgb(0xea, 0x43, 0x35)
     render(center, zoom; size, style, source, maxzoom, marker, marker_color) -> MapCanvas
 
 Fetch, style, and draw the map for `center = (lon, lat)` at `zoom`, returning the
-filled `MapCanvas`. `size = (chars_wide, chars_high)`. When `marker` is `true`, a
-pin is placed with its tip on `center`.
+filled `MapCanvas`. `size = (chars_wide, chars_high)`.
+
+`marker` controls the pin: `true` anchors it on `center`, `false` disables it, and
+a `(lon, lat)` tuple anchors it at that geographic point (so it stays fixed on the
+map while `center` pans, scrolling off-screen when out of view).
 """
 function render(
         center::Tuple{<:Real,<:Real},
@@ -119,7 +144,7 @@ function render(
         style::Union{Style,Symbol} = default_style(),
         source::TileSource = TileSource(),
         maxzoom::Integer = 14,
-        marker::Bool = true,
+        marker::Union{Bool,Tuple{<:Real,<:Real}} = true,
         marker_color::ColorU = MARKER_COLOR,
     )
     style = style isa Symbol ? theme(style) : style
@@ -175,9 +200,13 @@ function render(
         end
     end
 
-    # Pin marking the exact requested center, on top of everything.
-    if marker
-        draw_marker!(mc, round(Int, mc.width / 2), round(Int, mc.height / 2), marker_color)
+    # Pin anchored to a geographic point (defaults to the view center), on top.
+    mpos = marker === true ? center : (marker === false ? nothing : marker)
+    if mpos !== nothing
+        mx, my = marker_pixel(lon, lat, mpos[1], mpos[2], zoom, mc.width, mc.height)
+        if 0 <= mx < mc.width && 0 <= my < mc.height
+            draw_marker!(mc, mx, my, marker_color)
+        end
     end
 
     return mc

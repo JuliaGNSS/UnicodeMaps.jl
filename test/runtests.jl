@@ -140,6 +140,22 @@ const M = UnicodeMaps
         @test count(==(red), mc.canvas.colors) > 5
     end
 
+    @testset "marker anchoring (stays put while panning)" begin
+        W, H = 200, 160
+        # marker on the view center sits at the middle
+        @test M.marker_pixel(10.0, 50.0, 10.0, 50.0, 8, W, H) == (100, 80)
+        # a point east/south of center is right/below center
+        e = M.marker_pixel(10.0, 50.0, 10.5, 50.0, 8, W, H)
+        @test e[1] > 100 && e[2] == 80
+        s = M.marker_pixel(10.0, 50.0, 10.0, 49.5, 8, W, H)
+        @test s[2] > 80 && s[1] == 100
+        # panning the view east (center lon increases) moves the fixed pin left
+        pin = (10.0, 50.0)
+        before = M.marker_pixel(10.0, 50.0, pin..., 8, W, H)[1]
+        after = M.marker_pixel(10.2, 50.0, pin..., 8, W, H)[1]
+        @test after < before
+    end
+
     @testset "network smoke test (OpenFreeMap)" begin
         ran = false
         try

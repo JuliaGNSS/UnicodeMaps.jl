@@ -15,13 +15,7 @@ const DIM            = "\e[2m"
 const RESET_SGR      = "\e[0m"
 
 # --- pure pan/zoom math (unit-tested) ---
-
-const WORLD_TILE_PX = 256.0
-"Total map width/height in pixels at (possibly fractional) zoom `z`."
-world_px(z) = WORLD_TILE_PX * 2.0^z
-
-"Wrap a longitude into [-180, 180)."
-wrap_lon(lon) = mod(lon + 180.0, 360.0) - 180.0
+# `world_px` and `wrap_lon` are defined in render.jl.
 
 """
     pan_center(lon, lat, z, wchars, hchars, fx, fy) -> (lon, lat)
@@ -109,13 +103,15 @@ function explore(;
     )
     lon, lat = float(center[1]), float(center[2])
     z = float(zoom)
+    # Anchor the pin to the starting location so it stays put while panning.
+    pin = marker ? (lon, lat) : false
     term = REPL.Terminals.TTYTerminal(get(ENV, "TERM", "xterm"), stdin, stdout, stderr)
     print(stdout, ALT_SCREEN_ON, HIDE_CURSOR)
     REPL.Terminals.raw!(term, true)
     try
         while true
             w, h = terminal_size()
-            mc = render((lon, lat), z; size = (w, h - 1), style, source, maxzoom, marker, marker_color)
+            mc = render((lon, lat), z; size = (w, h - 1), style, source, maxzoom, marker = pin, marker_color)
             print(stdout, CURSOR_HOME, frame(mc), "\n", DIM, status_line(lon, lat, z, w), CLEAR_EOL, RESET_SGR)
             flush(stdout)
 
