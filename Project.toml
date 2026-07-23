@@ -1,6 +1,6 @@
 name = "UnicodeMaps"
 uuid = "93404ded-f489-4c96-9f3f-351522718b35"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["Sören Schönbrod <soeren.schoenbrod@juliahub.com>"]
 
 [deps]
