@@ -135,7 +135,13 @@ screen.
 """
 function line_label_anchor(pts, width, height)
     n = length(pts)
-    best = nothing        # index range of the longest visible run
+    # Index range of the longest visible run; 0 means we have not found one yet.
+    # Deliberately two Ints rather than a `Union{Nothing,Tuple{Int,Int}}`: Julia
+    # 1.10 miscompiles this loop when the accumulator is union-typed and hands
+    # back the run's last vertex instead of its midpoint (1.12 is fine, and so
+    # is 1.10 once anything perturbs the optimizer). Keep these type-stable.
+    besti = 0
+    bestj = 0
     bestlen = -1.0
     i = 1
     while i <= n
@@ -147,15 +153,19 @@ function line_label_anchor(pts, width, height)
         while j < n && onscreen(pts[j+1], width, height)
             j += 1
         end
-        len = sum(k -> segment_length(pts[k], pts[k+1]), i:(j - 1); init = 0.0)
+        len = 0.0
+        for k in i:(j - 1)
+            len += segment_length(pts[k], pts[k+1])
+        end
         if len > bestlen
             bestlen = len
-            best = (i, j)
+            besti = i
+            bestj = j
         end
         i = j + 1
     end
-    best === nothing && return nothing
-    x, y = point_at_length(pts, best[1], best[2], bestlen / 2)
+    besti == 0 && return nothing
+    x, y = point_at_length(pts, besti, bestj, bestlen / 2)
     return (x, y, bestlen)
 end
 
