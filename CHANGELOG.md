@@ -1,5 +1,12 @@
 # Changelog
 
+# [1.2.0](https://github.com/JuliaGNSS/UnicodeMaps.jl/compare/v1.1.0...v1.2.0) (2026-07-27)
+
+
+### Features
+
+* loosen the default label budget to match collision spacing ([125f4fd](https://github.com/JuliaGNSS/UnicodeMaps.jl/commit/125f4fd1450bf0a95de3b66d477ad2be52c07c84))
+
 # [1.1.0](https://github.com/JuliaGNSS/UnicodeMaps.jl/compare/v1.0.0...v1.1.0) (2026-07-27)
 
 
