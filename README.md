@@ -101,7 +101,7 @@ The pipeline mirrors mapscii's, built from reusable pieces:
 | Decode MVT protobuf + geometry | `src/mvt.jl` | `ProtoBuf.jl` bindings + command-stream decoder |
 | Parse Mapbox GL style | `src/style.jl` | filters compiled to predicates |
 | Braille drawing primitives | `src/canvas.jl` | on [`UnicodePlots.jl`](https://github.com/JuliaPlots/UnicodePlots.jl)'s `BrailleCanvas`; adds polygon fill + labels |
-| Renderer | `src/render.jl` | visible tiles, scaling, draw order, label placement |
+| Renderer | `src/render.jl` | visible tiles, scaling, draw order, label placement + budget |
 
 ## Tile source
 
@@ -115,6 +115,38 @@ worldmap(center = (2.35, 48.85), zoom = 10, source = src)
 ```
 
 Reuse one `TileSource` across calls to benefit from its in-memory tile cache.
+
+## Labels
+
+Country, city, place, water and street names are drawn on top of the map. A
+terminal has room for far fewer labels than a pixel map, so the renderer keeps a
+budget — roughly one label per 250 character cells — and spends it on the most
+important candidates first. Style layer order decides between kinds:
+
+> countries → cities → villages/suburbs → oceans, seas and bays → major roads →
+> minor roads → lakes, rivers and ponds
+
+and within a kind it is the place's OpenMapTiles `rank`, or for a road the length
+of its visible stretch. Overlapping and repeated labels are dropped. (Small water
+bodies come last because OpenMapTiles gives an ornamental fountain the same
+`class` as a real lake, and on a terminal-sized map a street name is worth more.)
+
+A line feature — a street, or a long lake — is labelled at the midpoint of its
+longest *visible* stretch, so the text lands on the part you can actually see.
+
+Because the budget follows the size of your terminal rather than the zoom level,
+a view stays about equally busy whether you are looking at a continent or a city
+block. Override it with `max_labels`:
+
+```julia
+worldmap(center = (13.42, 52.51), zoom = 15)                   # auto budget
+worldmap(center = (13.42, 52.51), zoom = 15, max_labels = 5)   # just the headline streets
+worldmap(center = (13.42, 52.51), zoom = 15, max_labels = 0)   # none at all
+```
+
+Street names come from the `transportation_name` source layer, which the tile
+server only ships from zoom 6 up — and the smaller the road, the later it enters
+the tiles — so they fill in as you zoom.
 
 ## Color schemes
 

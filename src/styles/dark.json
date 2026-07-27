@@ -126,9 +126,31 @@
       "paint": { "text-color": "#aab2c4" }
     },
     {
-      "id": "water-name",
+      "id": "water-name-sea",
       "type": "symbol",
       "source-layer": "water_name",
+      "filter": ["in", "class", "ocean", "sea", "bay", "strait"],
+      "paint": { "text-color": "#79b2e8" }
+    },
+    {
+      "id": "road-name-major",
+      "type": "symbol",
+      "source-layer": "transportation_name",
+      "filter": ["in", "class", "motorway", "trunk", "primary"],
+      "paint": { "text-color": "#ffcf6b" }
+    },
+    {
+      "id": "road-name-minor",
+      "type": "symbol",
+      "source-layer": "transportation_name",
+      "filter": ["!in", "class", "motorway", "trunk", "primary"],
+      "paint": { "text-color": "#9aa0ac" }
+    },
+    {
+      "id": "water-name-other",
+      "type": "symbol",
+      "source-layer": "water_name",
+      "filter": ["!in", "class", "ocean", "sea", "bay", "strait"],
       "paint": { "text-color": "#79b2e8" }
     }
   ]

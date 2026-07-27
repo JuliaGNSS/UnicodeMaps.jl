@@ -81,7 +81,7 @@ end
 
 """
     explore(; center, zoom, style, source, maxzoom, marker, marker_color,
-              pan_fraction, zoom_step, min_zoom, max_zoom)
+              max_labels, pan_fraction, zoom_step, min_zoom, max_zoom)
 
 Open an interactive full-screen map. Pan with the arrow keys or `hjkl`, zoom with
 `+`/`-`, and quit with `q` (or `Esc`). Returns the final `(; center, zoom)`.
@@ -96,6 +96,7 @@ function explore(;
         maxzoom::Integer = 14,
         marker::Bool = true,
         marker_color::ColorU = MARKER_COLOR,
+        max_labels::Union{Nothing,Integer} = nothing,
         pan_fraction::Real = 0.25,
         zoom_step::Real = 0.5,
         min_zoom::Real = 0.0,
@@ -111,7 +112,8 @@ function explore(;
     try
         while true
             w, h = terminal_size()
-            mc = render((lon, lat), z; size = (w, h - 1), style, source, maxzoom, marker = pin, marker_color)
+            mc = render((lon, lat), z; size = (w, h - 1), style, source, maxzoom,
+                        marker = pin, marker_color, max_labels)
             print(stdout, CURSOR_HOME, frame(mc), "\n", DIM, status_line(lon, lat, z, w), CLEAR_EOL, RESET_SGR)
             flush(stdout)
 

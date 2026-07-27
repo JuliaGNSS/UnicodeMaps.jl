@@ -156,6 +156,80 @@ const M = UnicodeMaps
         @test after < before
     end
 
+    @testset "line label anchoring" begin
+        W, H = 200, 160
+        # a fully visible horizontal line is labelled at its midpoint
+        @test M.line_label_anchor([(0, 80), (100, 80)], W, H) == (50, 80, 100.0)
+        # a single visible vertex is still a usable anchor, with zero length
+        @test M.line_label_anchor([(10, 10)], W, H) == (10, 10, 0.0)
+        # nothing on screen -> no anchor
+        @test M.line_label_anchor([(-5, -5), (-50, -50)], W, H) === nothing
+        # the anchor lands on the longest *visible* run, not the first one
+        pts = [(0, 10), (10, 10),            # short visible run
+               (-40, 10), (-40, 100),        # off-screen detour
+               (20, 100), (180, 100)]        # long visible run
+        x, y, len = M.line_label_anchor(pts, W, H)
+        @test y == 100 && 20 < x < 180 && len ≈ 160.0
+        # a line reaching off-screen is anchored inside the visible part
+        x2, y2, _ = M.line_label_anchor([(150, 40), (400, 40)], W, H)
+        @test x2 == 150 && y2 == 40
+    end
+
+    @testset "label budget and priority" begin
+        # the budget follows the canvas area, not the zoom level, and is clamped
+        @test M.label_budget(120, 50) == (120 * 50) ÷ M.CELLS_PER_LABEL
+        @test M.label_budget(400, 120) > M.label_budget(120, 50)
+        @test M.label_budget(10, 5) == 3      # floor: a tiny canvas still labels
+        @test M.label_budget(500, 500) == 60  # ceiling: never a wall of text
+        # earlier style layer wins; within a layer, lower rank wins
+        c(layer, rank) = M.LabelCandidate("x", 0, 0, M.rgb(0, 0, 0), layer, rank)
+        cands = [c(3, 1.0), c(1, 9.0), c(1, 2.0), c(2, 0.0)]
+        sort!(cands; by = M.label_priority, alg = MergeSort)
+        @test [(l.layer, l.rank) for l in cands] ==
+              [(1, 2.0), (1, 9.0), (2, 0.0), (3, 1.0)]
+        # OpenMapTiles place ranks carry through; rankless layers tie at 0
+        @test M.point_rank(Dict("rank" => 3)) == 3.0
+        @test M.point_rank(Dict("name" => "Lake")) == 0.0
+    end
+
+    @testset "street name style layers" begin
+        for name in M.THEMES
+            t = theme(name)
+            road = filter(l -> l.source_layer == "transportation_name", t.layers)
+            @test length(road) == 2
+            @test all(l -> l.type == :symbol, road)
+            # no zoom gate: the label budget decides what fits, not the zoom
+            @test all(l -> l.minzoom === nothing && l.maxzoom === nothing, road)
+            # major roads are matched by the first of the two, minor by the second
+            @test road[1].applies(Dict("class" => "motorway", "name" => "A1"))
+            @test !road[1].applies(Dict("class" => "residential", "name" => "Main St"))
+            @test road[2].applies(Dict("class" => "residential", "name" => "Main St"))
+        end
+    end
+
+    @testset "symbol layer precedence" begin
+        # Layer order is the label priority, so it has to encode what matters:
+        # places > seas > big roads > small roads > ponds and fountains, which
+        # OpenMapTiles gives the same class ("lake") as real lakes.
+        for name in M.THEMES
+            idx = Dict(l.id => i for (i, l) in enumerate(theme(name).layers))
+            @test idx["place-country"] < idx["place-city"] < idx["place-other"]
+            @test idx["place-other"] < idx["water-name-sea"]
+            @test idx["water-name-sea"] < idx["road-name-major"] < idx["road-name-minor"]
+            @test idx["road-name-minor"] < idx["water-name-other"]
+        end
+        sea, other = let ls = theme(:dark).layers
+            (only(filter(l -> l.id == "water-name-sea", ls)),
+             only(filter(l -> l.id == "water-name-other", ls)))
+        end
+        @test sea.applies(Dict("class" => "sea", "name" => "North Sea"))
+        @test sea.applies(Dict("class" => "bay", "name" => "Hudson Bay"))
+        @test !other.applies(Dict("class" => "bay", "name" => "Hudson Bay"))
+        @test !sea.applies(Dict("class" => "lake", "name" => "Neptunbrunnen"))
+        @test other.applies(Dict("class" => "lake", "name" => "Neptunbrunnen"))
+        @test !other.applies(Dict("class" => "ocean", "name" => "North Atlantic Ocean"))
+    end
+
     @testset "network smoke test (OpenFreeMap)" begin
         ran = false
         try

@@ -67,6 +67,8 @@ Keyword arguments:
 - `maxzoom`: highest tile zoom to request (default `14`).
 - `marker`: place a pin on `center` (default `true`).
 - `marker_color`: the pin color (default Google-Maps red).
+- `max_labels`: how many labels to draw at most; defaults to a budget scaled to
+  `size`, keeping the most important ones (countries before cities before streets).
 
 Reuse a single `source` across calls to benefit from its tile cache.
 """
@@ -79,8 +81,10 @@ function worldmap(;
         maxzoom::Integer = 14,
         marker::Union{Bool,Tuple{<:Real,<:Real}} = true,
         marker_color::ColorU = MARKER_COLOR,
+        max_labels::Union{Nothing,Integer} = nothing,
     )
-    return MapImage(render(center, zoom; size, style, source, maxzoom, marker, marker_color))
+    return MapImage(render(center, zoom; size, style, source, maxzoom, marker,
+                           marker_color, max_labels))
 end
 
 end # module UnicodeMaps
