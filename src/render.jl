@@ -201,9 +201,16 @@ end
 # soup rather than a map. Purely a function of available room — one label per
 # this many character cells — so the same view stays equally legible at any zoom
 # and the budget grows with the terminal.
-const CELLS_PER_LABEL = 250
+#
+# Tuned so a canvas the size of the README samples lands where collision alone
+# used to put it: the overlap check already spaces labels out, so the budget's
+# job is only to stop dense city views from filling every free cell, not to
+# thin out views that were fine to begin with. The ceiling is deliberately far
+# above what a normal terminal asks for, so it stays a backstop rather than
+# quietly flattening the scaling on wide displays.
+const CELLS_PER_LABEL = 100
 
-label_budget(cw, ch) = clamp((cw * ch) ÷ CELLS_PER_LABEL, 3, 60)
+label_budget(cw, ch) = clamp((cw * ch) ÷ CELLS_PER_LABEL, 3, 250)
 
 # Simple label collision: reject a label whose character-cell bounding box
 # overlaps an already-placed one, or whose text was already shown.

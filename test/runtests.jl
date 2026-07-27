@@ -179,8 +179,11 @@ const M = UnicodeMaps
         # the budget follows the canvas area, not the zoom level, and is clamped
         @test M.label_budget(120, 50) == (120 * 50) ÷ M.CELLS_PER_LABEL
         @test M.label_budget(400, 120) > M.label_budget(120, 50)
-        @test M.label_budget(10, 5) == 3      # floor: a tiny canvas still labels
-        @test M.label_budget(500, 500) == 60  # ceiling: never a wall of text
+        @test M.label_budget(10, 5) == 3       # floor: a tiny canvas still labels
+        @test M.label_budget(500, 500) == 250  # ceiling: never a wall of text
+        # the ceiling is a backstop, not the usual case: an ordinary terminal
+        # must still get its area-proportional share rather than the clamp
+        @test M.label_budget(120, 50) < 250
         # earlier style layer wins; within a layer, lower rank wins
         c(layer, rank) = M.LabelCandidate("x", 0, 0, M.rgb(0, 0, 0), layer, rank)
         cands = [c(3, 1.0), c(1, 9.0), c(1, 2.0), c(2, 0.0)]
